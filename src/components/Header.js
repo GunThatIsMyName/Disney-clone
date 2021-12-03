@@ -1,30 +1,47 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useAppContext } from "../context/AppContext";
 import { headerList } from "../utils/help";
 
 function Header() {
-  const { user, handleAuth } = useAppContext();
-  console.log(user, "user");
+  const { user, handleAuth,handleLogout,checkingLoginStatus } = useAppContext();
+
+
+  useEffect(()=>{
+    checkingLoginStatus();
+  },[])
+
+
   return (
     <Wrapper>
       <img
         src="https://upload.wikimedia.org/wikipedia/commons/archive/3/3e/20210207182738%21Disney%2B_logo.svg"
         alt="disney+Logo"
       />
-      <div className="header__center">
-        {headerList.map((item) => {
-          return (
-            <li key={item.id}>
-              {item.icons}
-              <span>{item.text}</span>
-            </li>
-          );
-        })}
-      </div>
-      <button onClick={handleAuth} className="header__user">
-        Login
-      </button>
+      {user.name !== "" && user.email !== "" && (
+        <div className="header__center">
+          {headerList.map((item) => {
+            return (
+              <li key={item.id}>
+                {item.icons}
+                <span>{item.text}</span>
+              </li>
+            );
+          })}
+        </div>
+      )}
+      {user.name === "" ? (
+        <button onClick={handleAuth} className="header__user">
+          Login
+        </button>
+      ) : (
+        <div className="header__users" >
+          <button onClick={handleLogout} className="header__user">
+          Logout
+        </button>
+        <img src={user.photo} alt={user.name} className="header__user-img" />
+        </div>
+      )}
     </Wrapper>
   );
 }
@@ -61,6 +78,10 @@ const Wrapper = styled.header`
       }
     }
   }
+  .header__users{
+    display:flex;
+    align-items:center;
+  }
   .header__user {
     margin-left: auto;
     max-width: 200px;
@@ -76,6 +97,11 @@ const Wrapper = styled.header`
       background: #fff;
       color: #222;
     }
+  }
+  .header__user-img{
+    width:3rem;
+    border-radius:50%;
+    margin-left:5px;
   }
   @media screen and (max-width: 756px) {
     .header__center {
